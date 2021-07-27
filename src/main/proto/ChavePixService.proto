@@ -1,0 +1,112 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option java_multiple_files = true;
+option java_package = "br.com.zup.orangetalents";
+option java_outer_classname = "Cliente";
+
+package br.com.zup.orangetalents;
+
+service InsereChavePixService {
+  rpc insere(ChavePixRequest) returns (ChavePixResponse){}
+}
+
+service RemoveChavePixService{
+  rpc remove(RemoveChavePixRequest) returns (RemoveChavePixResponse){}
+}
+
+service ConsultaChavePixService{
+  rpc consulta(ConsultaChavePixRequest) returns (ConsultaChavePixResponse){}
+}
+
+service ListaChavePixService{
+  rpc lista(ListaChavePixRequest) returns (ListaChavePixResponse){}
+}
+
+enum TipoContaGrpc {
+  TIPOCONTADESCONHECIDA = 0;
+  CORRENTE = 1;
+  POUPANCA = 2;
+}
+
+enum TipoChaveGrpc {
+  TIPOCHAVEDESCONHECIDA = 0;
+  ALEATORIA = 1;
+  CPF = 2;
+  CELULAR = 3;
+  EMAIL = 4;
+}
+
+message ChavePixRequest{
+  string codigo = 1;
+  TipoContaGrpc tipoConta = 2;
+  TipoChaveGrpc tipoChave = 3;
+  string chave = 4;
+}
+
+message ChavePixResponse{
+  string pixId = 1;
+}
+
+message RemoveChavePixRequest{
+  string pixId = 1;
+  string clientId = 2;
+}
+
+message RemoveChavePixResponse{
+}
+
+message ConsultaChavePixRequest{
+  message FiltroPorPixId{
+    string clienteId = 1;
+    string pixId = 2;
+  }
+
+  oneof filtro{
+    FiltroPorPixId pixId = 1;
+    string chave = 2;
+  }
+}
+
+message ConsultaChavePixResponse {
+
+  message ChavePix {
+
+    message ContaInfo {
+      TipoContaGrpc tipo     = 1;
+      string instituicao   = 2;
+      string nomeDoTitular = 3;
+      string cpfDoTitular  = 4;
+      string agencia       = 5;
+      string numeroDaConta = 6;
+    }
+
+    TipoChaveGrpc tipo        = 1;
+    string chave            = 2;
+    ContaInfo conta         = 3;
+    google.protobuf.Timestamp criadaEm = 4;
+  }
+
+  string clienteId = 1;
+  string pixId     = 2;
+  ChavePix chave   = 3;
+}
+
+message ListaChavePixRequest{
+  string clienteId = 1;
+}
+
+message ListaChavePixResponse{
+
+  message Chave{
+    string id = 1;
+    string clienteId = 2;
+    TipoChaveGrpc tipoChave = 3;
+    string chave = 4;
+    TipoContaGrpc tipoConta = 5;
+    google.protobuf.Timestamp criadaEm = 6;
+  }
+
+  repeated Chave chaves = 1;
+}
